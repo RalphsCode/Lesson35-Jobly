@@ -8,19 +8,15 @@
       "minLength": 1,
       "maxLength": 30
     },
-    "description": {
-      "type": "string"
+    "minEmployees": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 1000
     },
-    "numEmployees": {
+    "maxEmployees": {
       "type": "integer",
-      "minimum": 0,
+      "minimum": 1,
       "maximum": 10000
-    },
-    "logoUrl": {
-      "type": "string",
-      "format": "uri"
     }
-  },
-  "additionalProperties": false,
-  "required": []
+  }
 }

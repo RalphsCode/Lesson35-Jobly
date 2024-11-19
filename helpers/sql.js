@@ -36,15 +36,15 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
  * (2) minEmployees - Companies with a passed in minimum number of employees
  * (3) maxEmployees - Companies with a passed in maximum number of employees
  */
-function searchParams(name, minEmployees, maxEmployees){
+function searchParams(searchName, minEmployees, maxEmployees){
   let { strName, strEmployees } = "";
-  // If name is in the paramaters
-  if (name !== undefined){
-      strName = `name LIKE '%${name.toLowerCase()}%'`;}
+  // If name is in the API body
+  if (searchName !== undefined){
+      strName = `name ILIKE '%${searchName.toLowerCase()}%'`;}
 
   // If there is minEmployees, but NOT maxEmployees
   if (minEmployees !== undefined && maxEmployees === undefined){
-      strEmployees = `numEmployees > ${minEmployees}`;}
+      strEmployees = `num_employees >= ${minEmployees}`;}
 
   // If there is min and maxEmployees
   else if (minEmployees !== undefined && maxEmployees !== undefined){
@@ -52,12 +52,12 @@ function searchParams(name, minEmployees, maxEmployees){
           // respond with a 400 error with an appropriate message
           throw new BadRequestError("MinEmployees must be less than maxEmployees", 400);
       }  // END if...
-      strEmployees = `numEmployees BETWEEN ${minEmployees} AND ${maxEmployees}`
+      strEmployees = `num_employees BETWEEN ${minEmployees} AND ${maxEmployees}`
   }  // END else if...
 
   // If there is a maxEmployees, but NOT a min
   else if (maxEmployees !== undefined && minEmployees === undefined){
-      strEmployees = `numEmployees < ${maxEmployees}`;
+      strEmployees = `num_employees <= ${maxEmployees}`;
   }  // END else if...
 
   // Build the WHERE statement string

@@ -10,6 +10,7 @@ const { ensureLoggedIn } = require("../middleware/auth");
 const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
+const companySearchSchema = require("../schemas/companySearch.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
 
 const router = new express.Router();
@@ -52,12 +53,17 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
 
 router.get("/", async function (req, res, next) {
   try {
-    const searchName = req.query.name;
-    const searchMinEmp = req.query.minEmployees;
-    const searchMaxEmp = req.query.maxEmployees;
-    console.log("Search Terms:",searchName, searchMinEmp, searchMaxEmp);
+    const validator = jsonschema.validate(req.body, companySearchSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+    const searchName = req.query.nameLike;
+    const minEmployees = req.query.minEmployees;
+    const maxEmployees = req.query.maxEmployees;
+    console.log("Search Terms:",searchName, minEmployees, maxEmployees);
 
-    const companies = await Company.findAll(searchName, searchMinEmp, searchMaxEmp);
+    const companies = await Company.findAll(searchName, minEmployees, maxEmployees);
     return res.json({ companies });
   } catch (err) {
     return next(err);
