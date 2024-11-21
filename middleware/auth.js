@@ -43,7 +43,28 @@ function ensureLoggedIn(req, res, next) {
 }
 
 
+/** Middleware to use when they must be Admin.
+ * 
+ * Require admin user or raise 401 
+ * */
+
+function ensureAdmin(req, res, next) {
+  console.log("in ensureAdmin");
+  console.log('User:', res.locals.user);
+  try {
+    if (!res.locals.user.isAdmin) {
+      throw new UnauthorizedError();
+  } else {
+    return next();
+  }  } catch(err) {
+    return next(err);
+  }
+} // END ensureAdmin
+
+
+
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
+  ensureAdmin,
 };

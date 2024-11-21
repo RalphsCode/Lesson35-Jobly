@@ -6,7 +6,7 @@ const jsonschema = require("jsonschema");
 const express = require("express");
 
 const { BadRequestError } = require("../expressError");
-const { ensureLoggedIn } = require("../middleware/auth");
+const { ensureLoggedIn, ensureAdmin } = require("../middleware/auth");
 const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
@@ -78,7 +78,7 @@ router.get("/", async function (req, res, next) {
  * Authorization required: none
  */
 
-router.get("/:handle", async function (req, res, next) {
+router.get("/:handle", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
   try {
     const company = await Company.get(req.params.handle);
     return res.json({ company });
@@ -98,7 +98,7 @@ router.get("/:handle", async function (req, res, next) {
  * Authorization required: login
  */
 
-router.patch("/:handle", ensureLoggedIn, async function (req, res, next) {
+router.patch("/:handle", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, companyUpdateSchema);
     if (!validator.valid) {
