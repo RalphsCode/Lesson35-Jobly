@@ -22,10 +22,10 @@ const router = new express.Router();
  *
  * Returns { handle, name, description, numEmployees, logoUrl }
  *
- * Authorization required: login
+ * Authorization required: login & Admin
  */
 
-router.post("/", ensureLoggedIn, async function (req, res, next) {
+router.post("/", ensureLoggedIn, ensureAdmin,async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, companyNewSchema);
     if (!validator.valid) {
@@ -78,7 +78,7 @@ router.get("/", async function (req, res, next) {
  * Authorization required: none
  */
 
-router.get("/:handle", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
+router.get("/:handle", async function (req, res, next) {
   try {
     const company = await Company.get(req.params.handle);
     return res.json({ company });
@@ -95,7 +95,7 @@ router.get("/:handle", ensureLoggedIn, ensureAdmin, async function (req, res, ne
  *
  * Returns { handle, name, description, numEmployees, logo_url }
  *
- * Authorization required: login
+ * Authorization required: login & Admin
  */
 
 router.patch("/:handle", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
@@ -115,10 +115,10 @@ router.patch("/:handle", ensureLoggedIn, ensureAdmin, async function (req, res, 
 
 /** DELETE /[handle]  =>  { deleted: handle }
  *
- * Authorization: login
+ * Authorization: login & Admin
  */
 
-router.delete("/:handle", ensureLoggedIn, async function (req, res, next) {
+router.delete("/:handle", ensureLoggedIn, ensureAdmin,async function (req, res, next) {
   try {
     await Company.remove(req.params.handle);
     return res.json({ deleted: req.params.handle });
