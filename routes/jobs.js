@@ -69,7 +69,7 @@ router.get("/", async function (req, res, next) {
  * Authorization required: none
  */
 
-router.get("/:handle", async function (req, res, next) {
+router.get("/:title", async function (req, res, next) {
   try {
     const job = await Job.get(req.params.title);
     return res.json({ job });

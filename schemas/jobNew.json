@@ -9,16 +9,17 @@
       "maxLength": 30
     },
     "salary": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 10
+      "type": "integer",
+      "minValue": 1,
+      "maxValue": 500000
     },
     "equity": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 10
+        "type": "number",
+        "minValue": 0,
+        "maxValue": 1
     },
     "company_handle": {
+        "type":"string",
         "minLength": 1,
         "maxLength": 30
     }
