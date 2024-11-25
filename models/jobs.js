@@ -84,42 +84,41 @@ class Job {
     return job;
   }
 
-  /** Update company data with `data`.
+  /** Update a job with `data`.
    *
    * This is a "partial update" --- it's fine if data doesn't contain all the
    * fields; this only changes provided ones.
    *
-   * Data can include: {name, description, numEmployees, logoUrl}
+   * Data can include: {title, salary, equity }
+   * 
+   * Note: Job ID and Company Handle can NOT be updated/changed.
    *
-   * Returns {handle, name, description, numEmployees, logoUrl}
+   * Returns {title, salary, equity, company_handle}
    *
    * Throws NotFoundError if not found.
    */
 
-//   static async update(handle, data) {
-//     const { setCols, values } = sqlForPartialUpdate(
-//         data,
-//         {
-//           numEmployees: "num_employees",
-//           logoUrl: "logo_url",
-//         });
-//     const handleVarIdx = "$" + (values.length + 1);
+  static async update(title, data) {
+    const { setCols, values } = sqlForPartialUpdate(
+        data,
+      {});
+    const handleVarIdx = "$" + (values.length + 1);
 
-//     const querySql = `UPDATE companies 
-//                       SET ${setCols} 
-//                       WHERE handle = ${handleVarIdx} 
-//                       RETURNING handle, 
-//                                 name, 
-//                                 description, 
-//                                 num_employees AS "numEmployees", 
-//                                 logo_url AS "logoUrl"`;
-//     const result = await db.query(querySql, [...values, handle]);
-//     const company = result.rows[0];
+    const querySql = `UPDATE jobs 
+                      SET ${setCols} 
+                      WHERE title = ${handleVarIdx} 
+                      RETURNING id,
+                          title,
+                          salary,
+                          equity,
+                          company_handle`;
+    const result = await db.query(querySql, [...values, title]);
+    const job = result.rows[0];
 
-//     if (!company) throw new NotFoundError(`No company: ${handle}`);
+    if (!job) throw new NotFoundError(`No job: ${title}`);
 
-//     return company;
-//   }
+    return job;
+  }
 
   /** Delete given company from database; returns undefined.
    *
