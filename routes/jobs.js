@@ -104,19 +104,19 @@ router.patch("/:title", ensureLoggedIn, ensureAdmin, async function (req, res, n
   }
 });
 
-/** DELETE /[handle]  =>  { deleted: handle }
+/** DELETE /[title]  =>  { deleted: title }
  *
  * Authorization: login & Admin
  */
 
-// router.delete("/:handle", ensureLoggedIn, ensureAdmin,async function (req, res, next) {
-//   try {
-//     await Company.remove(req.params.handle);
-//     return res.json({ deleted: req.params.handle });
-//   } catch (err) {
-//     return next(err);
-//   }
-// });
+router.delete("/:title", ensureLoggedIn, ensureAdmin,async function (req, res, next) {
+  try {
+    await Job.remove(req.params.title);
+    return res.json({ deleted: req.params.title });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 
 module.exports = router;
