@@ -103,6 +103,25 @@ router.patch("/:username", ensureLoggedIn, async function (req, res, next) {
   }
 });
 
+/** Apply for a Job 
+ * 
+ * Username sends their:
+ * (1) username, and
+ * (2) the job id
+ * 
+ * Returns the result of the attempted application
+ * 
+ *  POST /users/:username/jobs/:id 
+*/
+router.post("/:username/jobs/:id", ensureLoggedIn, async function (req, res, next) {
+  try {
+    User.applyJob(req.params.username, req.params.id);
+    return res.json({ applied: req.params.id });
+  } catch(err) {
+    next(err);
+  }
+})
+
 
 /** DELETE /[username]  =>  { deleted: username }
  *

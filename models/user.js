@@ -137,10 +137,21 @@ class User {
 
     const user = userRes.rows[0];
 
-    if (!user) throw new NotFoundError(`No user: ${username}`);
-
-    return user;
-  }
+    if (userRes.rows.length == 0) {
+      throw new NotFoundError(`No user: ${username}`);
+    };
+    // Get Job Applications for teh user
+    const userJobApps = await db.query(
+            `SELECT job_id
+            FROM applications
+      WHERE username = $1`,
+      [username],
+      );
+      // Add the applications to the user as an array
+      user.job_applications = userJobApps.rows.map(a => a.job_id);
+      
+      return user;
+        }
 
   /** Update user data with `data`.
    *
@@ -189,6 +200,48 @@ class User {
     delete user.password;
     return user;
   }
+
+    /** Apply for job at company
+   *
+   * - username: username applying for job
+   * - jobId: job id
+   **/
+
+    static async applyJob(username, jobId) {
+      try {
+        // Verify the job ID exists in the db
+        const jobExists = await db.query(
+              `SELECT id
+              FROM jobs
+              WHERE id = $1`, [jobId]);
+        // if the job ID does not exist
+        if (jobExists.rows.length === 0) {
+          throw new NotFoundError(`No job id: ${jobId}`, 404);
+        }
+    
+        // Verify the username exists in the db
+        const userExists = await db.query(
+              `SELECT username
+              FROM users
+              WHERE username = $1`, [username]);
+        // if the username does not exist
+        if (userExists.rows.length === 0) { 
+          throw new NotFoundError(`No username: ${username}`, 404);
+        }
+  
+      // Job and User valid, add to the db table
+        await db.query(
+            `INSERT INTO applications (job_id, username)
+             VALUES ($1, $2)`,
+          [jobId, username]);
+        } catch (error) {
+          if (error.code === '23505') { // Unique constraint violation
+            throw new ExpressError('Already applied for this job', 400);
+          } else {
+            throw error; // Re-throw other errors
+          } }
+    }
+
 
   /** Delete given user from database; returns undefined. */
 
