@@ -2,7 +2,7 @@
 
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { sqlForPartialUpdate, searchParams } = require("../helpers/sql");
+const { sqlForPartialUpdate, searchParams, jobSearch } = require("../helpers/sql");
 
 /** Related functions for jobs. */
 
@@ -48,7 +48,12 @@ class Job {
    * Returns [{ title, salary, equity, company_handle }, ...]
    * */
 
-  static async findAll() {
+  static async findAll(title, minSalary, hasEquity) {
+    let filters = jobSearch(title, minSalary, hasEquity)
+    console.log("filters (am in Jobs model, initiating the sql search)", filters);
+    if (filters === "No Paramaters Found") {
+      filters = "";
+    }
     const jobsRes = await db.query(
           `SELECT 
             title, 
@@ -56,6 +61,7 @@ class Job {
             equity, 
             company_handle
            FROM jobs
+           ${filters}
            ORDER BY title`);
     return jobsRes.rows;
   }

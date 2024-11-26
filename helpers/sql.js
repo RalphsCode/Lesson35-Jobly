@@ -78,13 +78,40 @@ function searchParams(searchName, minEmployees, maxEmployees){
       } else {
           returnStr = "No Paramaters Found";
       }
-
-  console.log(
-      `
-      returnStr: ${returnStr}
-      `
-  ) 
   return returnStr;
 }  // END searchParams
 
-module.exports = { sqlForPartialUpdate, searchParams };
+
+/** Job Search paramaters to SQL WHERE string 
+ * All 3 paramaters are optional
+ * hasEquity to be passed in as true if its a required paramater
+ * jest tests are in sql.test.js
+ * 
+ * returns a SQL WHERE clause to filter the db results
+ * sample request: ?title=Air%20cabin&hasEquity=true
+ * resulting output: 'WHERE title ILIKE '%Air cabin%' AND equity > 0'
+*/
+function jobSearch(title, minSalary, hasEquity){
+   
+    // Build the WHERE statement string
+    const conditions = []; // holds the individual search paramaters
+
+    if (title) {
+      conditions.push(`title ILIKE '%${title.toLowerCase()}%'`);
+    }
+  
+    if (minSalary) {
+      conditions.push(`salary >= ${minSalary}`);
+    }
+  
+    if (hasEquity) {
+      conditions.push('equity > 0');
+    }
+  
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  
+    console.log('whereClause:', whereClause);
+    return whereClause;
+  }  // END jobSearch
+
+module.exports = { sqlForPartialUpdate, searchParams, jobSearch };

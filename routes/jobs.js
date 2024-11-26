@@ -1,6 +1,6 @@
 "use strict";
 
-/** Routes for companies. */
+/** Routes for jobd. */
 
 const jsonschema = require("jsonschema");
 const express = require("express");
@@ -10,7 +10,7 @@ const { ensureLoggedIn, ensureAdmin } = require("../middleware/auth");
 const Job = require("../models/jobs");
 
 const jobNewSchema = require("../schemas/jobNew.json");
-// const jobSearchSchema = require("../schemas/jobSearch.json");
+const jobSearchSchema = require("../schemas/jobSearch.json");
 const jobUpdateSchema = require("../schemas/jobUpdate.json");
 
 const router = new express.Router();
@@ -48,13 +48,17 @@ router.post("/", ensureLoggedIn, ensureAdmin,async function (req, res, next) {
 
 router.get("/", async function (req, res, next) {
   try {
-    // const validator = jsonschema.validate(req.body, jobSearchSchema);
-    // if (!validator.valid) {
-    //   const errs = validator.errors.map(e => e.stack);
-    //   throw new BadRequestError(errs);
-    // }
+    const validator = jsonschema.validate(req.body, jobSearchSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
 
-    const jobs = await Job.findAll();
+    const title = req.query.title;
+    const minSalary = req.query.minSalary;
+    const hasEquity = req.query.hasEquity;
+
+    const jobs = await Job.findAll(title, minSalary, hasEquity);
     return res.json({ jobs });
   } catch (err) {
     return next(err);

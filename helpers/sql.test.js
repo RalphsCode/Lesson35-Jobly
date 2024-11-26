@@ -3,7 +3,7 @@ process.env.NODE_ENV = "test"; 		//  create node test environment
 const request = require("supertest");
 const app = require("../app"); 
 
-const { sqlForPartialUpdate, searchParams } = require("../helpers/sql");
+const { sqlForPartialUpdate, searchParams, jobSearch } = require("../helpers/sql");
 const { BadRequestError } = require("../expressError");
 
 /** Testing the sqlForPartialUpdate function */
@@ -25,15 +25,7 @@ describe("Test sqlForPartialUpdate", function(){
 
 })
 
-/** Testing the searchParams function */
-
-/** Test:
- * range params
- * min < max
- * capitalization
- * different argument combinations
- * no arguments
- */
+/** Testing the companies searchParams function */
 
 describe("Test searchParams function", function(){
 
@@ -97,3 +89,20 @@ describe("Test searchParams function", function(){
     }); 
     
 });  // END describe
+
+
+/** Testing the jobs jobSearch function */
+
+describe("Test jobSearch function", function(){
+
+    test("Test No Parameters Supplied status = 200", async function(){
+        const result = jobSearch();
+        expect(result).toBe("");
+    });
+
+    test("Only title paramater passed in", async function(){
+        const result = jobSearch('vert', undefined, undefined);
+        expect(result).toBe("WHERE title ILIKE '%vert%'");
+    });
+    
+});
